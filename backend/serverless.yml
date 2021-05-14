@@ -1,0 +1,71 @@
+service: serverless-corona-inzidenz
+
+frameworkVersion: '2'
+plugins:
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  stage: dev
+  region: eu-central-1
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    DATA_S3_BUCKET: serverless-corona-inzidenz-269004290177-${self:provider.stage}
+    DATA_URL: 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab.xlsx?__blob=publicationFile'
+    DATA_FILE: 'data.json'
+
+functions:
+
+  ConvertData:
+    handler: src/lambda/convert-data.handler
+    events:
+      - schedule:
+          name: rkiDataSchedule
+          description: trigger the conversion every day at 6:00 am
+          rate: cron(6 0 * * ? *) 
+          enabled: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: arn:aws:s3:::${self:provider.environment.DATA_S3_BUCKET}/*
+
+resources:
+  Resources:
+    DataBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.DATA_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: ServerlessRecipesS3Policy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.DATA_S3_BUCKET}/*'
+        Bucket: !Ref DataBucket

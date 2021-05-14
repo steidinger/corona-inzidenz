@@ -1,0 +1,24 @@
+{
+  "name": "serverless-corona-backend",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.907.0",
+    "luxon": "^1.27.0",
+    "node-fetch": "^2.6.1",
+    "winston": "^3.3.3",
+    "xlsx": "^0.17.0"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "serverless": "^2.41.2",
+    "serverless-iam-roles-per-function": "^3.1.0"
+  },
+  "scripts": {
+    "deploy": "sls deploy -v",
+    "test": "jest"
+  },
+  "author": "steidinger@acm.org",
+  "license": "MIT"
+}
