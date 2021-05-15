@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, CardMedia, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import {Skeleton} from '@material-ui/lab';
 import InzidenzChart from './InzidenzChart';
 
@@ -77,9 +77,7 @@ export default function InzidenzCard({county, data}) {
     const {inzidenzToday, change, changePercent, inzidenz} = countyData ?? {};
     return (
       <Card className={classes.card}>
-        <CardMedia>
-            {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
-        </CardMedia>
+        {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
         <CardContent className={classes.content}>
             <Typography variant="body1" className={classes.countyName}>{county}</Typography>
             <Typography variant="h4" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
