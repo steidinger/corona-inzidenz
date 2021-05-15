@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
                             'today  changePercent  threshold-below'
                             'date   date           date'
                             `,
-        gridTemplateColumns: '100px 50px 1fr',
+        gridTemplateColumns: '80px 50px 1fr',
     },
     mainValue: {
         textAlign: 'left',
@@ -83,7 +83,7 @@ function findCounty(data, county) {
 
 function ThresholdInfo({threshold, below, days, className}) {
     const info = [
-        days > 7 ? 'mehr als 7' : days,
+        days > 7 ? '>7' : days,
         'Tage',
         below ? 'unter' : 'über',
         threshold
