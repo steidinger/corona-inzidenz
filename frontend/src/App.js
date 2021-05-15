@@ -1,9 +1,10 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Fab, IconButton, Toolbar, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add';
 import InzidenzCard from './components/InzidenzCard';
+import SelectCountyDialog from './components/SelectCountyDialog';
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -20,10 +21,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const STORAGE_KEY = 'coronaInzidenzCountySelection';
+
+function getInitialCounties() {
+  try {
+    const initial = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!Array.isArray(initial)) {
+      return [];
+    }
+    return initial;
+  } catch (error) {
+    return [];
+  }
+}
+
+function persistSelectedCounties(selected) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(selected));
+}
+
 function App() {
   const classes = useStyles();
   const [data, setData] = useState(null);
+  const [counties, setCounties] = useState(() => getInitialCounties());
   const [error, setError] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const allCounties = useMemo(() => !data ? [] : data.map(({ name }) => name), [data]);
+
   useEffect(() => {
     const url = 'https://serverless-corona-inzidenz-269004290177-dev.s3.eu-central-1.amazonaws.com/data.json';
     fetch(url)
@@ -31,6 +54,7 @@ function App() {
       .then(json => setData(json))
       .catch(error => setError(error));
   }, []);
+
   return (
     <>
       <AppBar position="static">
@@ -42,10 +66,20 @@ function App() {
         </Toolbar>
       </AppBar>
       {error ?? <Typography variant="body1">{error}</Typography>}
-      <InzidenzCard county="LK Esslingen" data={data} />
-      <InzidenzCard county="SK Stuttgart" data={data} />
-      <InzidenzCard county="LK Schwarzwald-Baar-Kreis" data={data} />
-      <Fab color="primary" aria-label="add" className={classes.fab}>
+      {counties.map(county => <InzidenzCard key={county} county={county} data={data} />)}
+      {dialogOpen &&
+        <SelectCountyDialog
+          allCounties={allCounties}
+          activeCounties={counties}
+          onApply={(selected) => {
+            setCounties(selected);
+            persistSelectedCounties(selected);
+            setDialogOpen(false);
+          }}
+          onCancel={() => setDialogOpen(false)}
+        />
+      }
+      <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setDialogOpen(true)}>
         <AddIcon />
       </Fab>
     </>
