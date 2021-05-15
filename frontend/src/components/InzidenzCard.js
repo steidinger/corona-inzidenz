@@ -1,7 +1,8 @@
 import {useMemo} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, CardMedia, CardContent, Grid, Typography } from '@material-ui/core';
+import { Card, CardMedia, CardContent, Typography } from '@material-ui/core';
 import {Skeleton} from '@material-ui/lab';
+import InzidenzChart from './InzidenzChart';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -60,21 +61,25 @@ function findCounty(data, county) {
     const change = inzidenzToday.value - inzidenzYesterday.value;
     const changePercent = Math.round(change * 100 / inzidenzYesterday.value);
     return {
+        inzidenz: countyData.inzidenz,
         inzidenzToday: {
             value:new Intl.NumberFormat('de-DE', {maximumFractionDigits: 0}).format(inzidenzToday.value),
             date: inzidenzToday.date,
         }, 
         change: new Intl.NumberFormat('de-DE', {signDisplay: 'always', maximumFractionDigits: 0}).format(change), 
-        changePercent: new Intl.NumberFormat('de-DE', {signDisplay: 'always', maximumFractionDigits: 1}).format(changePercent)
+        changePercent: new Intl.NumberFormat('de-DE', {signDisplay: 'always', maximumFractionDigits: 1}).format(changePercent),
     };
 }
 
 export default function InzidenzCard({county, data}) {
     const classes = useStyles();
     const countyData = useMemo(() => findCounty(data, county), [data, county]);
-    const {inzidenzToday, change, changePercent} = countyData ?? {};
+    const {inzidenzToday, change, changePercent, inzidenz} = countyData ?? {};
     return (
       <Card className={classes.card}>
+        <CardMedia>
+            {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
+        </CardMedia>
         <CardContent className={classes.content}>
             <Typography variant="body1" className={classes.countyName}>{county}</Typography>
             <Typography variant="h4" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
