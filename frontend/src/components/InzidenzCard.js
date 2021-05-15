@@ -1,16 +1,45 @@
 import {useMemo} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, Grid, Typography } from '@material-ui/core';
+import { Card, CardMedia, CardContent, Grid, Typography } from '@material-ui/core';
 import {Skeleton} from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     card: {
       margin: theme.spacing(2),
-      padding: theme.spacing(1),
+    },
+    content: {
+        display: 'grid',
+        gridTemplateAreas: `
+                            'county county'
+                            'today  changeAbsolute'
+                            'today  changePercent'
+                            'date   date'
+                            `,
+        gridTemplateColumns: '100px 1fr',
     },
     mainValue: {
-        textAlign: 'center',
-    }
+        textAlign: 'left',
+        alignSelf: 'center',
+        lineHeight: 1.0,
+        gridArea: 'today',
+    },
+    changeAbsolute: {
+        textAlign: 'right',
+        gridArea: 'changeAbsolute',
+    },
+    changePercent: {
+        textAlign: 'right',
+        gridArea: 'changePercent',
+    },
+    countyName: {
+        textAlign: 'left',
+        gridArea: 'county',
+    },
+    date: {
+        marginTop: theme.spacing(2),
+        textAlign: 'right',
+        gridArea: 'date',
+    },
   }));
   
 function findCounty(data, county) {
@@ -46,17 +75,13 @@ export default function InzidenzCard({county, data}) {
     const {inzidenzToday, change, changePercent} = countyData ?? {};
     return (
       <Card className={classes.card}>
-        <Typography variant="caption">{county}</Typography>
-        <Typography variant="h1" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
-        <Grid container justify="space-between">
-            <Grid item>
-                <Typography variant="body1">{change}</Typography>
-            </Grid>
-            <Grid item>
-                <Typography variant="body1">{changePercent}%</Typography>
-            </Grid>
-        </Grid>
-        <Typography variant="caption">Stand: {inzidenzToday?.date ?? <Skeleton />}</Typography>
+        <CardContent className={classes.content}>
+            <Typography variant="body1" className={classes.countyName}>{county}</Typography>
+            <Typography variant="h4" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
+            <Typography variant="body1" className={classes.changeAbsolute}>{change}</Typography>
+            <Typography variant="body1" className={classes.changePercent}>{changePercent}%</Typography>
+            <Typography variant="caption" className={classes.date}>Stand: {inzidenzToday?.date ?? <Skeleton />}</Typography>
+        </CardContent>
       </Card>
     )
   }
