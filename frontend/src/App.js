@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Fab, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Fab, Grid, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import InzidenzCard from './components/InzidenzCard';
 import SelectCountyDialog from './components/SelectCountyDialog';
@@ -44,7 +44,7 @@ function App() {
 
   useEffect(() => {
     const url = 'https://serverless-corona-inzidenz-269004290177-dev.s3.eu-central-1.amazonaws.com/data.json';
-    fetch(url)
+    fetch(url, {cache: 'reload'})
       .then(response => response.json())
       .then(json => setData(json))
       .catch(error => setError(error));
@@ -58,7 +58,12 @@ function App() {
         </Toolbar>
       </AppBar>
       {error ?? <Typography variant="body1">{error}</Typography>}
-      {counties.map(county => <InzidenzCard key={county} county={county} data={data} />)}
+      <Grid container>
+        {counties.map(county => 
+          <Grid item xs={12} sm={6} md={4}  xl={2}>
+            <InzidenzCard key={county} county={county} data={data} />
+          </Grid>)}
+      </Grid>
       {dialogOpen &&
         <SelectCountyDialog
           allCounties={allCounties}
