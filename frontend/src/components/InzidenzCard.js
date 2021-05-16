@@ -4,6 +4,7 @@ import { Card, CardContent, Typography } from '@material-ui/core';
 import {Skeleton} from '@material-ui/lab';
 import InzidenzChart from './InzidenzChart';
 import determineThresholds from '../utils/determine-thresholds';
+import determineTrend from '../utils/determine-trend';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
                             'county county         county'
                             'today  changeAbsolute threshold-above'
                             'today  changePercent  threshold-below'
-                            'date   date           date'
+                            'date  date          trend'
                             `,
         gridTemplateColumns: '80px 50px 1fr',
     },
@@ -38,8 +39,7 @@ const useStyles = makeStyles((theme) => ({
         gridArea: 'county',
     },
     date: {
-        marginTop: theme.spacing(2),
-        textAlign: 'right',
+        textAlign: 'left',
         gridArea: 'date',
     },
     thresholdAbove: {
@@ -50,6 +50,14 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'right',
         gridArea: 'threshold-below',
     },
+    trend: {
+        textAlign: 'right',
+        gridArea: 'trend',
+    },
+    unit: {
+        display: 'inline-block',
+        width: '1em',
+    }
   }));
   
 function findCounty(data, county) {
@@ -69,6 +77,12 @@ function findCounty(data, county) {
     const inzidenzYesterday = countyData.inzidenz.slice(-2)[0];
     const change = inzidenzToday.value - inzidenzYesterday.value;
     const changePercent = Math.round(change * 100 / inzidenzYesterday.value);
+    const thresholds = determineThresholds(countyData.inzidenz);
+    let trend;
+    // for Baden-Württemberg relaxing/tightening of rules depends on the days the rate is falling/rising if the rate is below 100
+    if (thresholds.below?.threshold === 100) {
+        trend = determineTrend(countyData.inzidenz, 100);
+    }
     return {
         inzidenz: countyData.inzidenz,
         inzidenzToday: {
@@ -77,7 +91,8 @@ function findCounty(data, county) {
         }, 
         change: new Intl.NumberFormat('de-DE', {signDisplay: 'always', maximumFractionDigits: 0}).format(change), 
         changePercent: new Intl.NumberFormat('de-DE', {signDisplay: 'always', maximumFractionDigits: 1}).format(changePercent),
-        thresholds: determineThresholds(countyData.inzidenz),
+        thresholds,
+        trend,
     };
 }
 
@@ -91,21 +106,32 @@ function ThresholdInfo({threshold, below, days, className}) {
     return <Typography variant="body1" className={className}>{info}</Typography>
 }
 
+function TrendInfo({trend, className}) {
+    const {days, falling} = trend ?? {};
+    const info = [
+        days,
+        days === 1 ? 'Tag' : 'Tage',
+        falling ? 'fallend' : 'steigend',
+    ].join(' ');
+    return <Typography variant="body1" className={className}>{info}</Typography>
+}
+
 export default function InzidenzCard({county, data}) {
     const classes = useStyles();
     const countyData = useMemo(() => findCounty(data, county), [data, county]);
-    const {inzidenzToday, change, changePercent, inzidenz, thresholds} = countyData ?? {};
+    const {inzidenzToday, change, changePercent, inzidenz, thresholds, trend} = countyData ?? {};
     return (
       <Card className={classes.card}>
         {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
         <CardContent className={classes.content}>
             <Typography variant="body1" className={classes.countyName}>{county}</Typography>
             <Typography variant="h4" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
-            <Typography variant="body1" className={classes.changeAbsolute}>{change}</Typography>
-            <Typography variant="body1" className={classes.changePercent}>{changePercent}%</Typography>
+            <Typography variant="body1" className={classes.changeAbsolute}>{change}<span className={classes.unit} /></Typography>
+            <Typography variant="body1" className={classes.changePercent}>{changePercent}<span className={classes.unit}>%</span></Typography>
             <Typography variant="caption" className={classes.date}>Stand: {inzidenzToday?.date ?? <Skeleton />}</Typography>
             {thresholds?.below && <ThresholdInfo className={classes.thresholdBelow} threshold={thresholds.below.threshold} days={thresholds.below.daysBelow} below />}
             {thresholds?.above && <ThresholdInfo className={classes.thresholdAbove} threshold={thresholds.above.threshold} days={thresholds.above.daysAbove} />}
+            {trend && <TrendInfo className={classes.trend} trend={trend} />}
         </CardContent>
       </Card>
     )
