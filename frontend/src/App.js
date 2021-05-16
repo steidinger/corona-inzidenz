@@ -44,7 +44,7 @@ function App() {
 
   useEffect(() => {
     const url = 'https://serverless-corona-inzidenz-269004290177-dev.s3.eu-central-1.amazonaws.com/data.json';
-    fetch(url)
+    fetch(url, {cache: 'reload'})
       .then(response => response.json())
       .then(json => setData(json))
       .catch(error => setError(error));
