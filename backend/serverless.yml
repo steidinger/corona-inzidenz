@@ -28,7 +28,7 @@ functions:
       - schedule:
           name: rkiDataSchedule
           description: trigger the conversion every day at 6:00 am
-          rate: cron(6 0 * * ? *) 
+          rate: cron(0 4,17 * * ? *) 
           enabled: true
     iamRoleStatements:
       - Effect: Allow
