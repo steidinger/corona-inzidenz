@@ -38,36 +38,36 @@ describe('countDays', () => {
 });
 
 describe('findRelevantThresholds', () => {
-    it('should return the lowest threshold with daysBelow > 1', () => {
+    it('should return the lowest threshold with daysBelow > 0', () => {
         expect(findRelevantThresholds([
             {threshold: 100, daysBelow: 0}, 
             {threshold: 150, daysBelow: 1}, 
             {threshold: 165, daysBelow: 5},
         ]))
-            .toEqual(expect.objectContaining({below: expect.objectContaining({threshold: 165, daysBelow: 5})}));
+            .toEqual(expect.objectContaining({below: expect.objectContaining({threshold: 150, daysBelow: 1})}));
     });
     
-    it('should return undefined for "below" if there is no threshold with daysBelow > 1', () => {
+    it('should return undefined for "below" if there is no threshold with daysBelow > 0', () => {
         expect(findRelevantThresholds([
             {threshold: 100, daysBelow: 0}, 
-            {threshold: 150, daysBelow: 1}, 
-            {threshold: 165, daysBelow: 1},
+            {threshold: 150, daysBelow: 0}, 
+            {threshold: 165, daysBelow: 0},
         ]))
             .toEqual(expect.objectContaining({below: undefined}));
     });
 
-    it('should return the largest threshold with daysAbove > 1', () => {
+    it('should return the largest threshold with daysAbove > 0', () => {
         expect(findRelevantThresholds([
             {threshold: 100, daysAbove: 8}, 
             {threshold: 150, daysAbove: 5}, 
-            {threshold: 165, daysAbove: 1},
+            {threshold: 165, daysAbove: 0},
         ]))
             .toEqual(expect.objectContaining({above: expect.objectContaining({threshold: 150, daysAbove: 5})}));
     });
 
     it('should return undefined for "above" if there is no threshold with daysAbove > 1', () => {
         expect(findRelevantThresholds([
-            {threshold: 100, daysAbove: 1}, 
+            {threshold: 100, daysAbove: 0}, 
             {threshold: 150, daysAbove: 0}, 
             {threshold: 165, daysAbove: 0},
         ]))

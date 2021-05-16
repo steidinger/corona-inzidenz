@@ -26,8 +26,8 @@ export function countDays(data) {
 }
 
 export function findRelevantThresholds(thresholds) {
-    const below = thresholds.filter(({daysBelow}) => daysBelow > 1)[0];
-    const above = thresholds.filter(({daysAbove}) => daysAbove > 1).reverse()[0];
+    const below = thresholds.filter(({daysBelow}) => daysBelow > 0)[0];
+    const above = thresholds.filter(({daysAbove}) => daysAbove > 0).reverse()[0];
     return {above, below};
 }
 

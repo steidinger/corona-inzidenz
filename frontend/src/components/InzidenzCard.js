@@ -84,7 +84,7 @@ function findCounty(data, county) {
 function ThresholdInfo({threshold, below, days, className}) {
     const info = [
         days > 7 ? '>7' : days,
-        'Tage',
+        days === 1 ? 'Tag' : 'Tage',
         below ? 'unter' : 'über',
         threshold
     ].join(' ');
