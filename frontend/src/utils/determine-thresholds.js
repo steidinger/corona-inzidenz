@@ -1,4 +1,4 @@
-const thresholds = [100, 150, 165];
+const thresholds = [50, 100, 150, 165];
 
 function countDaysBelow(values, threshold) {
     let count = 0;
