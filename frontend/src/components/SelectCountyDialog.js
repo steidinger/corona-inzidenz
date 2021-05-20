@@ -2,6 +2,20 @@ import { useCallback, useState } from 'react';
 import { Button, Checkbox, Dialog, DialogContent, DialogTitle, DialogActions, IconButton, Input, InputAdornment, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import {Clear, Search} from '@material-ui/icons';
 
+function Counties({counties, selectedCounties, onToggle}) {
+    return (
+        <List dense button>
+            {counties.map(name =>
+                <ListItem button onClick={() => onToggle(name)} key={name}>
+                    <ListItemIcon>
+                        <Checkbox edge="start" disableRipple checked={selectedCounties.has(name)} />
+                    </ListItemIcon>
+                    <ListItemText>{name}</ListItemText>
+                </ListItem>)
+            }
+        </List>);
+}
+
 export default function SelectCountyDialog({ allCounties, activeCounties, onApply, onCancel }) {
     const [selectedCounties, setSelectedCounties] = useState(new Set(activeCounties));
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +36,7 @@ export default function SelectCountyDialog({ allCounties, activeCounties, onAppl
     const clearSearch = useCallback(function () {
         setSearchTerm('');
         setCounties(allCounties);
-    });
+    }, [allCounties]);
 
     function toggle(name) {
         const newState = new Set(selectedCounties);
@@ -51,16 +65,7 @@ export default function SelectCountyDialog({ allCounties, activeCounties, onAppl
                 />
             </DialogTitle>
             <DialogContent>
-                <List dense button>
-                    {counties.map(name =>
-                        <ListItem button onClick={() => toggle(name)} key={name}>
-                            <ListItemIcon>
-                                <Checkbox edge="start" disableRipple checked={selectedCounties.has(name)} />
-                            </ListItemIcon>
-                            <ListItemText>{name}</ListItemText>
-                        </ListItem>)
-                    }
-                </List>
+                <Counties counties={counties} selectedCounties={selectedCounties} onToggle={toggle} />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onCancel}>Abbrechen</Button>
