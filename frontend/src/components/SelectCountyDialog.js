@@ -1,8 +1,28 @@
-import { useState } from 'react';
-import { Button, Checkbox, Dialog, DialogContent, DialogTitle, DialogActions, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { useCallback, useState } from 'react';
+import { Button, Checkbox, Dialog, DialogContent, DialogTitle, DialogActions, IconButton, Input, InputAdornment, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import {Clear, Search} from '@material-ui/icons';
 
 export default function SelectCountyDialog({ allCounties, activeCounties, onApply, onCancel }) {
     const [selectedCounties, setSelectedCounties] = useState(new Set(activeCounties));
+    const [searchTerm, setSearchTerm] = useState('');
+    const [counties, setCounties] = useState(allCounties);
+    
+    const updateSearch = useCallback(function (event) {
+        let term = event.target.value;
+        setSearchTerm(event.target.value);
+        if (term) {
+            term = term.toLowerCase();
+            setCounties(allCounties.filter(county => county.toLowerCase().indexOf(term) !== -1));
+        }
+        else {
+            setCounties(allCounties);
+        }
+    }, [allCounties]);
+
+    const clearSearch = useCallback(function () {
+        setSearchTerm('');
+        setCounties(allCounties);
+    });
 
     function toggle(name) {
         const newState = new Set(selectedCounties);
@@ -16,11 +36,23 @@ export default function SelectCountyDialog({ allCounties, activeCounties, onAppl
     }
 
     return (
-        <Dialog open={true} scroll="paper">
-            <DialogTitle>Angezeigte Kreise auswählen</DialogTitle>
+        <Dialog open={true} scroll="paper" className="county-dialog">
+            <DialogTitle>
+                <div>Angezeigte Kreise auswählen</div>
+                <Input 
+                    type="search" 
+                    value={searchTerm} 
+                    onChange={updateSearch} 
+                    endAdornment={
+                        <InputAdornment position="end">
+                            {searchTerm ? <IconButton onClick={clearSearch}><Clear /></IconButton> : <Search />}
+                        </InputAdornment>
+                    }
+                />
+            </DialogTitle>
             <DialogContent>
                 <List dense button>
-                    {allCounties.map(name =>
+                    {counties.map(name =>
                         <ListItem button onClick={() => toggle(name)} key={name}>
                             <ListItemIcon>
                                 <Checkbox edge="start" disableRipple checked={selectedCounties.has(name)} />

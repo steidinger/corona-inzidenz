@@ -7,3 +7,8 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.county-dialog [role=dialog] {
+  height: 100vh;
+  min-width: 50vw;
+}
