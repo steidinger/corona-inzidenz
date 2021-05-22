@@ -60,8 +60,8 @@ function App() {
       {error ?? <Typography variant="body1">{error}</Typography>}
       <Grid container>
         {counties.map(county => 
-          <Grid item xs={12} sm={6} md={4}  xl={2}>
-            <InzidenzCard key={county} county={county} data={data} />
+          <Grid item xs={12} sm={6} md={4}  xl={2} key={county} >
+            <InzidenzCard county={county} data={data} />
           </Grid>)}
       </Grid>
       {dialogOpen &&
