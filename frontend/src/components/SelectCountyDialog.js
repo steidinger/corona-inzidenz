@@ -20,7 +20,7 @@ function Counties({className, counties, selectedCounties, onToggle}) {
                     <ListItemText>{name}</ListItemText>
                 </ListItem>)
             }
-        </List>, [counties, selectedCounties, onToggle]);
+        </List>, [className, counties, selectedCounties, onToggle]);
 }
 
 const initialState = {
