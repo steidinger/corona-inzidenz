@@ -2,7 +2,7 @@ const { DateTime } = require("luxon");
 const XLSX = require("xlsx");
 const logger = require('./logger');
 
-const InzidenzSheetName = 'LK_7-Tage-Inzidenz';
+const InzidenzSheetName = 'LK_7-Tage-Inzidenz (fixiert)';
 
 function convertToJson(excelFile) {
     const headerRow = 4;
