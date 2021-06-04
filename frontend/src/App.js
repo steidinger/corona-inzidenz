@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Fab, Grid, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, CircularProgress, Fab, Grid, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import InzidenzCard from './components/InzidenzCard';
 import SelectCountyDialog from './components/SelectCountyDialog';
 
@@ -13,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     bottom: theme.spacing(4),
     right: theme.spacing(4),
+  },
+  refresh: {
+    color: theme.palette.primary.contrastText,
   }
 }));
 
@@ -36,6 +40,8 @@ function persistSelectedCounties(selected) {
 
 function App() {
   const classes = useStyles();
+  const [reloadFlag, setReloadFlag] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [counties, setCounties] = useState(() => getInitialCounties());
   const [error, setError] = useState(null);
@@ -44,17 +50,29 @@ function App() {
 
   useEffect(() => {
     const url = 'https://serverless-corona-inzidenz-269004290177-dev.s3.eu-central-1.amazonaws.com/data.json';
-    fetch(url)
-      .then(response => response.json())
-      .then(json => setData(json))
-      .catch(error => setError(error));
-  }, []);
+    if (reloadFlag) {
+      setLoading(true);
+      fetch(url)
+        .then(response => response.json())
+        .then(json => {
+          setData(json);
+          setLoading(false);
+          setReloadFlag(false);
+        })
+        .catch(error => {
+          setLoading(false);
+          setReloadFlag(false);
+          setError(error); 
+        });
+    }
+  }, [reloadFlag]);
 
   return (
     <>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>Corona Inzidenz</Typography>
+          {loading ? <CircularProgress className={classes.refresh} /> : <Button onClick={() => setReloadFlag(true)}><RefreshIcon className={classes.refresh}/></Button>}
         </Toolbar>
       </AppBar>
       {error ?? <Typography variant="body1">{error}</Typography>}
