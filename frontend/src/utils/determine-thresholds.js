@@ -1,5 +1,7 @@
 const thresholds = [35, 50, 100, 150, 165];
 
+export const MAX_INFO_DAYS = 14;
+
 function countDaysBelow(values, threshold) {
     let count = 0;
     while(count < values.length && values[count] < threshold) {
@@ -17,7 +19,7 @@ function countDaysAbove(values, threshold) {
 }
 
 export function countDays(data) {
-    const values = data.slice(-10).map(({value}) => value).reverse();
+    const values = data.slice(-1 * (MAX_INFO_DAYS + 1)).map(({value}) => value).reverse();
     return thresholds.map(threshold => ({
         daysBelow: countDaysBelow(values, threshold),
         daysAbove: countDaysAbove(values, threshold),

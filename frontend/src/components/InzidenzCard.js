@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography } from '@material-ui/core';
 import {Skeleton} from '@material-ui/lab';
 import InzidenzChart from './InzidenzChart';
-import determineThresholds from '../utils/determine-thresholds';
+import determineThresholds, {MAX_INFO_DAYS} from '../utils/determine-thresholds';
 import determineTrend from '../utils/determine-trend';
 
 const useStyles = makeStyles((theme) => ({
@@ -98,7 +98,7 @@ function findCounty(data, county) {
 
 function ThresholdInfo({threshold, below, days, className}) {
     const info = [
-        days > 7 ? '>7' : days,
+        days > MAX_INFO_DAYS ? `>${MAX_INFO_DAYS}` : days,
         days === 1 ? 'Tag' : 'Tage',
         below ? 'unter' : 'über',
         threshold
