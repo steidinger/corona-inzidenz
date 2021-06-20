@@ -19,13 +19,19 @@ const useStyles = makeStyles((theme) => ({
   refresh: {
     color: theme.palette.primary.contrastText,
   },
-  chartPeriod: {
+}));
+
+const useChartPeriodStyles = makeStyles((theme) => ({
+  root: {
     color: theme.palette.primary.contrastText,
   },
-  chartPeriodLabel: {
+  label: {
     color: theme.palette.primary.contrastText,
   },
-  chartPeriodSelect: {
+  select: {
+    color: theme.palette.primary.contrastText,
+  },
+  icon: {
     color: theme.palette.primary.contrastText,
   },
 }));
@@ -50,6 +56,7 @@ function persistSelectedCounties(selected) {
 
 function App() {
   const classes = useStyles();
+  const chartPeriodClasses = useChartPeriodStyles();
   const [reloadFlag, setReloadFlag] = useState(true);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
@@ -84,19 +91,16 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>Corona Inzidenz</Typography>
-          {/* <FormControl className={classes.chartPeriod}>
-            <InputLabel id="chart-period-label" className={classes.chartPeriodLabel}>Chartzeitraum</InputLabel> */}
-            <Select 
-              labelId="chart-period-label" 
-              className={classes.chartPeriodSelect}
-              value={chartPeriod} 
-              onChange={event => setChartPeriod(event.target.value)}
-            >
-              {PERIODS.map(period => 
-                <MenuItem key={period.name} value={period}>{period.name}</MenuItem>
-              )}
-            </Select>
-          {/* </FormControl> */}
+          <Select 
+            aria-label="Zeitraum für das Chart" 
+            classes={chartPeriodClasses}
+            value={chartPeriod.id} 
+            onChange={event => setChartPeriod(PERIODS.find(({id}) => id === event.target.value))}
+          >
+            {PERIODS.map(period => 
+              <MenuItem key={period.name} value={period.id}>{period.name}</MenuItem>
+            )}
+          </Select>
           {loading ? <CircularProgress className={classes.refresh} /> : <Button onClick={() => setReloadFlag(true)}><RefreshIcon className={classes.refresh}/></Button>}
         </Toolbar>
       </AppBar>

@@ -3,10 +3,10 @@ import { ResponsiveLine } from '@nivo/line';
 import { makeStyles } from '@material-ui/core/styles';
 
 export const PERIODS = [
-    {name: 'Gesamtchart', limit: data => data, axis: {format: '%m/%y', tickValues: 'every 1 month'}},
-    {name: '8 Wochen', limit: data => data.slice(-56), axis: {format: '%d.%m', tickValues: 'every 2 weeks'}},
-    {name: '4 Wochen', limit: data => data.slice(-28), axis: {format: '%d.%m', tickValues: 'every 1 week'}},
-    {name: '14 Tage', limit: data => data.slice(-14), axis: {format: '%d.%m', tickValues: 'every 3 days'}},
+    {id: 'ALL', name: 'Gesamtchart', limit: data => data, axis: {format: '%m/%y', tickValues: 'every 1 month'}},
+    {id: '8w', name: '8 Wochen', limit: data => data.slice(-56), axis: {format: '%d.%m', tickValues: 'every 2 weeks'}},
+    {id: '4w', name: '4 Wochen', limit: data => data.slice(-28), axis: {format: '%d.%m', tickValues: 'every 1 week'}},
+    {id: '14d', name: '14 Tage', limit: data => data.slice(-14), axis: {format: '%d.%m', tickValues: 'every 3 days'}},
 ];
 
 export const DEFAULT_PERIOD = PERIODS[1];
