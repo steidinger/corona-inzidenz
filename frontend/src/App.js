@@ -25,9 +25,6 @@ const useChartPeriodStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.primary.contrastText,
   },
-  label: {
-    color: theme.palette.primary.contrastText,
-  },
   select: {
     color: theme.palette.primary.contrastText,
   },
