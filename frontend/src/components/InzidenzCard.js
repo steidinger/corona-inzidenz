@@ -116,13 +116,13 @@ function TrendInfo({trend, className}) {
     return <Typography variant="body1" className={className}>{info}</Typography>
 }
 
-export default function InzidenzCard({county, data}) {
+export default function InzidenzCard({county, data, chartPeriod}) {
     const classes = useStyles();
     const countyData = useMemo(() => findCounty(data, county), [data, county]);
     const {inzidenzToday, change, changePercent, inzidenz, thresholds, trend} = countyData ?? {};
     return (
       <Card className={classes.card}>
-        {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
+        {inzidenz && <InzidenzChart county={county} data={inzidenz} period={chartPeriod} />}
         <CardContent className={classes.content}>
             <Typography variant="body1" component="h1" className={classes.countyName}>{county}</Typography>
             <Typography variant="h4" component="p" className={classes.mainValue} title="aktuelle Inzidenz">{inzidenzToday?.value ?? <Skeleton />}</Typography>

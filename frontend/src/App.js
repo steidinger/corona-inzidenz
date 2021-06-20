@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Button, CircularProgress, Fab, Grid, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, CircularProgress, Fab, FormControl, Grid, InputLabel, MenuItem, Select, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import InzidenzCard from './components/InzidenzCard';
 import SelectCountyDialog from './components/SelectCountyDialog';
+import { DEFAULT_PERIOD, PERIODS } from './components/InzidenzChart';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -17,7 +18,16 @@ const useStyles = makeStyles((theme) => ({
   },
   refresh: {
     color: theme.palette.primary.contrastText,
-  }
+  },
+  chartPeriod: {
+    color: theme.palette.primary.contrastText,
+  },
+  chartPeriodLabel: {
+    color: theme.palette.primary.contrastText,
+  },
+  chartPeriodSelect: {
+    color: theme.palette.primary.contrastText,
+  },
 }));
 
 const STORAGE_KEY = 'coronaInzidenzCountySelection';
@@ -46,6 +56,8 @@ function App() {
   const [counties, setCounties] = useState(() => getInitialCounties());
   const [error, setError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [chartPeriod, setChartPeriod] = useState(DEFAULT_PERIOD);
+
   const allCounties = useMemo(() => !data ? [] : data.map(({ name }) => name), [data]);
 
   useEffect(() => {
@@ -72,6 +84,19 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>Corona Inzidenz</Typography>
+          {/* <FormControl className={classes.chartPeriod}>
+            <InputLabel id="chart-period-label" className={classes.chartPeriodLabel}>Chartzeitraum</InputLabel> */}
+            <Select 
+              labelId="chart-period-label" 
+              className={classes.chartPeriodSelect}
+              value={chartPeriod} 
+              onChange={event => setChartPeriod(event.target.value)}
+            >
+              {PERIODS.map(period => 
+                <MenuItem key={period.name} value={period}>{period.name}</MenuItem>
+              )}
+            </Select>
+          {/* </FormControl> */}
           {loading ? <CircularProgress className={classes.refresh} /> : <Button onClick={() => setReloadFlag(true)}><RefreshIcon className={classes.refresh}/></Button>}
         </Toolbar>
       </AppBar>
@@ -79,7 +104,7 @@ function App() {
       <Grid container>
         {counties.map(county => 
           <Grid item xs={12} sm={6} md={4}  xl={2} key={county} >
-            <InzidenzCard county={county} data={data} />
+            <InzidenzCard county={county} data={data} chartPeriod={chartPeriod} />
           </Grid>)}
       </Grid>
       {dialogOpen &&
