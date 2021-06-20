@@ -1,4 +1,4 @@
-const thresholds = [35, 50, 100, 150, 165];
+const thresholds = [10, 35, 50, 100, 150, 165];
 
 export const MAX_INFO_DAYS = 14;
 

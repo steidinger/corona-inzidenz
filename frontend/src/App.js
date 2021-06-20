@@ -62,7 +62,7 @@ function App() {
         .catch(error => {
           setLoading(false);
           setReloadFlag(false);
-          setError(error); 
+          setError('Daten konnten nicht geladen werden:' + error); 
         });
     }
   }, [reloadFlag]);
@@ -94,7 +94,7 @@ function App() {
           onCancel={() => setDialogOpen(false)}
         />
       }
-      <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setDialogOpen(true)}>
+      <Fab color="primary" aria-label="Kreis auswählen" className={classes.fab} onClick={() => setDialogOpen(true)}>
         <AddIcon />
       </Fab>
     </>
