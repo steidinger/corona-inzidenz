@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Button, CircularProgress, Fab, Grid, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, CircularProgress, Fab, FormControl, Grid, InputLabel, MenuItem, Select, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import InzidenzCard from './components/InzidenzCard';
 import SelectCountyDialog from './components/SelectCountyDialog';
+import { DEFAULT_PERIOD, PERIODS } from './components/InzidenzChart';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -17,7 +18,19 @@ const useStyles = makeStyles((theme) => ({
   },
   refresh: {
     color: theme.palette.primary.contrastText,
-  }
+  },
+}));
+
+const useChartPeriodStyles = makeStyles((theme) => ({
+  root: {
+    color: theme.palette.primary.contrastText,
+  },
+  select: {
+    color: theme.palette.primary.contrastText,
+  },
+  icon: {
+    color: theme.palette.primary.contrastText,
+  },
 }));
 
 const STORAGE_KEY = 'coronaInzidenzCountySelection';
@@ -40,12 +53,15 @@ function persistSelectedCounties(selected) {
 
 function App() {
   const classes = useStyles();
+  const chartPeriodClasses = useChartPeriodStyles();
   const [reloadFlag, setReloadFlag] = useState(true);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [counties, setCounties] = useState(() => getInitialCounties());
   const [error, setError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [chartPeriod, setChartPeriod] = useState(DEFAULT_PERIOD);
+
   const allCounties = useMemo(() => !data ? [] : data.map(({ name }) => name), [data]);
 
   useEffect(() => {
@@ -62,7 +78,7 @@ function App() {
         .catch(error => {
           setLoading(false);
           setReloadFlag(false);
-          setError(error); 
+          setError('Daten konnten nicht geladen werden:' + error); 
         });
     }
   }, [reloadFlag]);
@@ -72,6 +88,16 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>Corona Inzidenz</Typography>
+          <Select 
+            aria-label="Zeitraum für das Chart" 
+            classes={chartPeriodClasses}
+            value={chartPeriod.id} 
+            onChange={event => setChartPeriod(PERIODS.find(({id}) => id === event.target.value))}
+          >
+            {PERIODS.map(period => 
+              <MenuItem key={period.name} value={period.id}>{period.name}</MenuItem>
+            )}
+          </Select>
           {loading ? <CircularProgress className={classes.refresh} /> : <Button onClick={() => setReloadFlag(true)}><RefreshIcon className={classes.refresh}/></Button>}
         </Toolbar>
       </AppBar>
@@ -79,7 +105,7 @@ function App() {
       <Grid container>
         {counties.map(county => 
           <Grid item xs={12} sm={6} md={4}  xl={2} key={county} >
-            <InzidenzCard county={county} data={data} />
+            <InzidenzCard county={county} data={data} chartPeriod={chartPeriod} />
           </Grid>)}
       </Grid>
       {dialogOpen &&
@@ -94,7 +120,7 @@ function App() {
           onCancel={() => setDialogOpen(false)}
         />
       }
-      <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setDialogOpen(true)}>
+      <Fab color="primary" aria-label="Kreis auswählen" className={classes.fab} onClick={() => setDialogOpen(true)}>
         <AddIcon />
       </Fab>
     </>

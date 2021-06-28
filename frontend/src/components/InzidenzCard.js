@@ -14,8 +14,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'grid',
         gridTemplateAreas: `
                             'county county         county'
-                            'today  changeAbsolute threshold-above'
-                            'today  changePercent  threshold-below'
+                            'today  changeAbsolute threshold-below'
+                            'today  changePercent  threshold-above'
                             'date  date          trend'
                             `,
         gridTemplateColumns: '80px 50px 1fr',
@@ -116,18 +116,18 @@ function TrendInfo({trend, className}) {
     return <Typography variant="body1" className={className}>{info}</Typography>
 }
 
-export default function InzidenzCard({county, data}) {
+export default function InzidenzCard({county, data, chartPeriod}) {
     const classes = useStyles();
     const countyData = useMemo(() => findCounty(data, county), [data, county]);
     const {inzidenzToday, change, changePercent, inzidenz, thresholds, trend} = countyData ?? {};
     return (
       <Card className={classes.card}>
-        {inzidenz && <InzidenzChart county={county} data={inzidenz} />}
+        {inzidenz && <InzidenzChart county={county} data={inzidenz} period={chartPeriod} />}
         <CardContent className={classes.content}>
-            <Typography variant="body1" className={classes.countyName}>{county}</Typography>
-            <Typography variant="h4" className={classes.mainValue}>{inzidenzToday?.value ?? <Skeleton />}</Typography>
-            <Typography variant="body1" className={classes.changeAbsolute}>{change}<span className={classes.unit} /></Typography>
-            <Typography variant="body1" className={classes.changePercent}>{changePercent}<span className={classes.unit}>%</span></Typography>
+            <Typography variant="body1" component="h1" className={classes.countyName}>{county}</Typography>
+            <Typography variant="h4" component="p" className={classes.mainValue} title="aktuelle Inzidenz">{inzidenzToday?.value ?? <Skeleton />}</Typography>
+            <Typography variant="body1" className={classes.changeAbsolute} title="Änderung gegenüber Vortag">{change}<span className={classes.unit} /></Typography>
+            <Typography variant="body1" className={classes.changePercent} title="Änderung gegenüber Vortag in Prozent">{changePercent}<span className={classes.unit}>%</span></Typography>
             <Typography variant="caption" className={classes.date}>Stand: {inzidenzToday?.date ?? <Skeleton />}</Typography>
             {thresholds?.below && <ThresholdInfo className={classes.thresholdBelow} threshold={thresholds.below.threshold} days={thresholds.below.daysBelow} below />}
             {thresholds?.above && <ThresholdInfo className={classes.thresholdAbove} threshold={thresholds.above.threshold} days={thresholds.above.daysAbove} />}
